@@ -118,7 +118,7 @@ See README for instructions.
             var element_id = result[2];
             if (state_name == "toggle") {
                 var current_state = jQuery("#"+element_id).data("psm_state_name");
-                if (current_state == "hide" || !current_state) {
+                if (current_state == "hide" || jQuery("#"+element_id+":visible").length == 0) {
                     jQuery("#"+element_id).goto_state("show", options);
                 } else {
                     jQuery("#"+element_id).goto_state("hide", options);
