@@ -45,7 +45,7 @@ Hello World Example:
 
 will fade in when you click on this link:
     
-    <a href="#" class="goto_state_1">Say hello</a>
+    <a href="#state_1">Say hello</a>
 
 It will fade out when you switch to another state.
 
@@ -53,7 +53,7 @@ The initial state is "0", so everything with the class "state_0" will
 appear when the page is loaded. Elements which do not have any "state_"
 class assigned stay visible all the time.
 
-States can have arbitrary names. If you assign a class "goto_state_foo",
+States can have arbitrary names. If you assign a link the href "#state_foo",
 clicking on it will switch to state "foo" and all elements with the class
 "state_foo" will appear.
 
@@ -68,7 +68,7 @@ A more advanced example:
         I won't appear in state "bar"
     </div>
     
-    <a href="#" class="goto_state_foo force_fade">
+    <a href="#state_foo" class="force_fade">
         I will switch to state "bar" and force all elements to fade in or
         out.
     </a>
@@ -110,5 +110,10 @@ TODO
 - add more transitions
 - go to page (page transitions, ajax loading)
 - find a better name
+- save/load a page state with url hash
+- page/state history with navigation
+- implement transition defaults
+- update documentation
+
 
 -------------------------------------------------------------------------
