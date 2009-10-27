@@ -79,9 +79,9 @@ elements have their own state. You address them by their ID.
     <div id="hey">Hey!</div>
     <div id="ho fade">Ho!</div>
     
-    <a href="#" class="show_hey">Show Hey</a>
-    <a href="#" class="hide_hey">Hide Hey</a>
-    <a href="#" class="toggle_ho">Show and hide Ho</a>
+    <a href="#show_hey">Show Hey</a>
+    <a href="#hide_hey">Hide Hey</a>
+    <a href="#toggle_ho">Show and hide Ho</a>
 
 One last thing: you can initialize PSM to an arbitrary state
 by calling
@@ -97,6 +97,12 @@ For more possibilities refer to psm_test.html
 CHANGELOG
 ---------
 
+2009-10-27 (v0.3):
+    Page history, element states depending on which page is loaded, syntax changes
+
+2009-10-23 (v0.2):
+    Page loading, transitions, defaults
+
 2009-10-21 (v0.1):
     Initial release
     
@@ -104,12 +110,10 @@ TODO
 ----
 
 - ability to set states using javascript instead of CSS classes, so it 
-  is unobstrusive
-- state conditionals (when in state 1 go to state 2 etc.)
+  is unobstrusive?
+- state conditionals (when in state 1 go to state 2 etc.)?
 - add more transitions
-- go to page (page transitions, ajax loading)
-- find a better name
+- find a better name?
 - save/load a page state with url hash
-- page/state history with navigation
-- implement transition defaults
+- state history?
 - update documentation
