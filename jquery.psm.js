@@ -62,7 +62,7 @@ Version 0.3
             this.set_defaults(options);
             // this.goto_state(state_name, {state_transition: "none"});
             if ($("#"+this.defaults.page_container).length > 0) {
-                $("#"+this.defaults.page_container).css({overflow: "hidden", position: "relative"});
+                $("#"+this.defaults.page_container).css({position: "relative"});
             }
             this.goto_page(this.defaults.initial_page, {page_transition: "none"});
             this.goto_state(this.defaults.initial_state, {state_transition: "none"});
@@ -131,25 +131,25 @@ Version 0.3
                     case "fade":
                         new_page.css({top: 0, left: 0});
                         new_page.fadeIn();
-                        old_page.fadeOut("def", function() {old_page.remove(); page_container.css({overflow:"visible"})});
+                        old_page.fadeOut("def", function() {old_page.remove(); page_container.css({overflow:""})});
                     break;
                     case "slide_left":
                         new_page.css({top: 0, left: page_container.width()});
                         new_page.show();
                         new_page.animate({left: 0}, settings.page_transition_duration);
-                        old_page.animate({left: -page_container.width()}, settings.page_transition_duration, function() {old_page.remove(); page_container.css({overflow:"visible"})});
+                        old_page.animate({left: -page_container.width()}, settings.page_transition_duration, function() {old_page.remove(); page_container.css({overflow:""})});
                     break;
                     case "slide_right":
                         new_page.css({top: 0, left: -page_container.width()});
                         new_page.show();
                         new_page.animate({left: 0}, settings.page_transition_duration);
-                        old_page.animate({left: page_container.width()}, settings.page_transition_duration, function() {old_page.remove(); page_container.css({overflow:"visible"})});
+                        old_page.animate({left: page_container.width()}, settings.page_transition_duration, function() {old_page.remove(); page_container.css({overflow:""})});
                     break;
                     case "slide_up":
                         new_page.css({top: page_container.height(), left: 0});
                         new_page.show();
                         new_page.animate({top: 0}, settings.page_transition_duration);
-                        old_page.animate({top: -page_container.height()}, settings.page_transition_duration, function() {old_page.remove(); page_container.css({overflow:"visible"})});
+                        old_page.animate({top: -page_container.height()}, settings.page_transition_duration, function() {old_page.remove(); page_container.css({overflow:""})});
                     break;
                     case "slide_down":
                         new_page.css({top: -page_container.height(), left: 0});
