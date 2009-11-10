@@ -122,6 +122,7 @@ Version 0.3
             var new_page = $("<div class='page' id='page_" + page_name + "'></div>");
             new_page.load(this.defaults.page_directory + page_name + this.defaults.page_extension, function() {
                 new_page.hide();
+                page_container.css({overflow:"hidden"});
                 page_container.append(new_page);
                 new_page.width(page_container.width());
                 new_page.height(page_container.height());
@@ -130,36 +131,37 @@ Version 0.3
                     case "fade":
                         new_page.css({top: 0, left: 0});
                         new_page.fadeIn();
-                        old_page.fadeOut("def", function() {old_page.remove()});
+                        old_page.fadeOut("def", function() {old_page.remove(); page_container.css({overflow:"visible"})});
                     break;
                     case "slide_left":
                         new_page.css({top: 0, left: page_container.width()});
                         new_page.show();
                         new_page.animate({left: 0}, settings.page_transition_duration);
-                        old_page.animate({left: -page_container.width()}, settings.page_transition_duration, function() {old_page.remove()});
+                        old_page.animate({left: -page_container.width()}, settings.page_transition_duration, function() {old_page.remove(); page_container.css({overflow:"visible"})});
                     break;
                     case "slide_right":
                         new_page.css({top: 0, left: -page_container.width()});
                         new_page.show();
                         new_page.animate({left: 0}, settings.page_transition_duration);
-                        old_page.animate({left: page_container.width()}, settings.page_transition_duration, function() {old_page.remove()});
+                        old_page.animate({left: page_container.width()}, settings.page_transition_duration, function() {old_page.remove(); page_container.css({overflow:"visible"})});
                     break;
                     case "slide_up":
                         new_page.css({top: page_container.height(), left: 0});
                         new_page.show();
                         new_page.animate({top: 0}, settings.page_transition_duration);
-                        old_page.animate({top: -page_container.height()}, settings.page_transition_duration, function() {old_page.remove()});
+                        old_page.animate({top: -page_container.height()}, settings.page_transition_duration, function() {old_page.remove(); page_container.css({overflow:"visible"})});
                     break;
                     case "slide_down":
                         new_page.css({top: -page_container.height(), left: 0});
                         new_page.show();
                         new_page.animate({top: 0}, settings.page_transition_duration);
-                        old_page.animate({top: page_container.height()}, settings.page_transition_duration, function() {old_page.remove()});
+                        old_page.animate({top: page_container.height()}, settings.page_transition_duration, function() {old_page.remove(); page_container.css({overflow:"visible"})});
                     break;
                     default:
                         new_page.css({top: 0, left: 0});
                         new_page.show();
                         old_page.remove();
+                        page_container.css({overflow:"visible"});
                     break;
                 }
             });
@@ -195,7 +197,6 @@ Version 0.3
         
         page_history_add: function(page_name, page_transition) {
             this.page_history.push({name: page_name, transition: page_transition});
-            console.log(this.page_history);
         },
         page_history_go_back: function() {
             var last_page = this.page_history.pop();
@@ -260,7 +261,7 @@ Version 0.3
     // #toggle_el
     
     // Change page
-    $("a[href^='#page_']").live("click", function(e) {
+    $("a[href*='#page_']").live("click", function(e) {
         var page_name = $(this).attr("href").match(/#page_(\w+)/)[1];
         var options = {};
         var page_transition = $(this).attr("class").match(/(fade|slide_left|slide_right|slide_up|slide_down)/);
@@ -271,13 +272,13 @@ Version 0.3
     });
     
     // Go one step back in the page history
-    $("a[href='#history_back']").live("click", function(e) {
+    $("a[href*=#history_back]").live("click", function(e) {
         $.psm.page_history_go_back();
         e.preventDefault();
     });
     
     // Change state of current page
-    $("a[href^='#state_']").live("click", function(e) {
+    $("a[href*='#state_']").live("click", function(e) {
         var state_name = $(this).attr("href").match(/#state_(\w+)/)[1];
         var options = {};
         var state_transition = $(this).attr("class").match(/force_(\w+)/);
@@ -289,7 +290,7 @@ Version 0.3
     // TODO: Change page AND state
         
     // Change one particular element's internal state
-    $("a[href^=#show_], a[href^=#hide_], a[href^=#toggle_]").live("click", function(e) {
+    $("a[href*=#show_], a[href*=#hide_], a[href*=#toggle_]").live("click", function(e) {
         var options = {};
         var state_transition = $(this).attr("class").match(/force_(\w+)/);
         if (state_transition) options.state_transition = state_transition[1];
