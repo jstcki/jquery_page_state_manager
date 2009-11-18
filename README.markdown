@@ -97,6 +97,9 @@ For more possibilities refer to psm_test.html
 CHANGELOG
 ---------
 
+2009-11-18 (v0.4):
+    More state transitions (slide\_down, slide\_right), go to page and state
+
 2009-10-27 (v0.3):
     Page history, element states depending on which page is loaded, syntax changes
 
@@ -104,7 +107,7 @@ CHANGELOG
     Page loading, transitions, defaults
 
 2009-10-21 (v0.1):
-    Initial release
+    First public release
     
 TODO
 ----

@@ -31,7 +31,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 See README.markdown for instructions.
 
-Version 0.3
+Version 0.4
 
 */
 
@@ -70,21 +70,22 @@ Version 0.3
         
         // Change State of Current Page
         
-        goto_state: function(state_name, options) {
+        goto_state: function(state_name, options, context) {
             var settings = {
                 state_transition: false
             }
             $.extend(settings, options);
             
-            var state_elements = $("[class*=' state_'], [class^=state_]");
+            var state_elements = $("[class*=' state_'], [class^=state_]", context);
             var elements_to_show = state_elements.filter(".state_"+state_name+", [class*=state_not_]:not(.state_not_"+state_name+")");
             var elements_to_hide = state_elements.not(elements_to_show);
-            elements_to_show.each(function(i) {
-                $(this).goto_state("show", settings);
-            });
             elements_to_hide.each(function(i) {
                 $(this).goto_state("hide", settings);
             });
+            elements_to_show.each(function(i) {
+                $(this).goto_state("show", settings);
+            });
+            
             this.current.state_name = state_name;
             this.set_hash();
         },
@@ -97,14 +98,13 @@ Version 0.3
                 return;
             }
             
-            if (this.current.page_name == page_name) {
-                return;
-            }
+            if (this.current.page_name == page_name) return;
             
             page_container = $("#"+this.defaults.page_container);
             var settings = {
                 page_transition: this.defaults.page_transition,
-                page_transition_duration: this.defaults.page_transition_duration
+                page_transition_duration: this.defaults.page_transition_duration,
+                initial_state: this.defaults.initial_state
             };
             $.extend(settings, options);
             
@@ -127,41 +127,47 @@ Version 0.3
                 new_page.width(page_container.width());
                 new_page.height(page_container.height());
                 new_page.css({position: "absolute"});
+                // Open new page in initial (or target) state
+                $.psm.goto_state(options.initial_state, $.psm.defaults, new_page);
+                var end_animation = function() {
+                    old_page.remove();
+                    page_container.css({overflow:"visible"});
+                }
+                // Page transition
                 switch (settings.page_transition) {
                     case "fade":
                         new_page.css({top: 0, left: 0});
-                        new_page.fadeIn();
-                        old_page.fadeOut("def", function() {old_page.remove(); page_container.css({overflow:""})});
+                        new_page.fadeIn(settings.page_transition_duration);
+                        old_page.fadeOut(settings.page_transition_duration, end_animation);
                     break;
                     case "slide_left":
                         new_page.css({top: 0, left: page_container.width()});
                         new_page.show();
                         new_page.animate({left: 0}, settings.page_transition_duration);
-                        old_page.animate({left: -page_container.width()}, settings.page_transition_duration, function() {old_page.remove(); page_container.css({overflow:""})});
+                        old_page.animate({left: -page_container.width()}, settings.page_transition_duration, end_animation);
                     break;
                     case "slide_right":
                         new_page.css({top: 0, left: -page_container.width()});
                         new_page.show();
                         new_page.animate({left: 0}, settings.page_transition_duration);
-                        old_page.animate({left: page_container.width()}, settings.page_transition_duration, function() {old_page.remove(); page_container.css({overflow:""})});
+                        old_page.animate({left: page_container.width()}, settings.page_transition_duration, end_animation);
                     break;
                     case "slide_up":
                         new_page.css({top: page_container.height(), left: 0});
                         new_page.show();
                         new_page.animate({top: 0}, settings.page_transition_duration);
-                        old_page.animate({top: -page_container.height()}, settings.page_transition_duration, function() {old_page.remove(); page_container.css({overflow:""})});
+                        old_page.animate({top: -page_container.height()}, settings.page_transition_duration, end_animation);
                     break;
                     case "slide_down":
                         new_page.css({top: -page_container.height(), left: 0});
                         new_page.show();
                         new_page.animate({top: 0}, settings.page_transition_duration);
-                        old_page.animate({top: page_container.height()}, settings.page_transition_duration, function() {old_page.remove(); page_container.css({overflow:"visible"})});
+                        old_page.animate({top: page_container.height()}, settings.page_transition_duration, end_animation);
                     break;
                     default:
                         new_page.css({top: 0, left: 0});
                         new_page.show();
-                        old_page.remove();
-                        page_container.css({overflow:"visible"});
+                        end_animation();
                     break;
                 }
             });
@@ -178,9 +184,9 @@ Version 0.3
         set_hash: function() {
             var hash = "";
             if (this.current.page_name && this.current.page_name != "") {
-                hash += "page_" + this.current.page_name + "_";
+                hash += "page_" + this.current.page_name;
             }
-            hash += "state_" + this.current.state_name;
+            if (this.current.state_name) hash += "_state_" + this.current.state_name;
             window.location.hash = hash;
         },
         get_reverse_transition: function(transition) {
@@ -209,35 +215,37 @@ Version 0.3
         goto_state: function(state_name, options) {
             var settings = {
                 state_transition: $.psm.defaults.state_transition,
-                page_transition_duration: $.psm.defaults.state_transition_duration
+                state_transition_duration: $.psm.defaults.state_transition_duration
             }
             $.extend(settings, options);
             return this.each(function() {
+                if (state_name == $(this).data("psm_state_name")) return;
                 var animation_options = {};
                 var animation_options_set = false;
-                switch(state_name) {
-                    case "show":
-                        if ($(this).hasClass("fade") || settings.state_transition == "fade") {
-                            animation_options.opacity = "show";
-                            animation_options_set = true;
-                        }
-                        if(settings.state_transition == "none" || !animation_options_set) {
-                           $(this).show();
-                        } else {
-                            $(this).animate(animation_options, settings.state_transition_duration);
-                        }
-                    break;
-                    case "hide":
-                        if ($(this).hasClass("fade") || settings.state_transition == "fade") {
-                            animation_options.opacity = "hide";
-                            animation_options_set = true;
-                        }
-                        if(settings.state_transition == "none" || !animation_options_set) {
-                            $(this).hide();
-                        } else {
-                            $(this).animate(animation_options, settings.state_transition_duration);
-                        }
-                    break;
+                if ($(this).hasClass("fade") || settings.state_transition == "fade") {
+                    animation_options.opacity = state_name;
+                    animation_options_set = true;
+                }
+                if ($(this).hasClass("slide_down") || settings.state_transition == "slide_down") {
+                    animation_options.height = state_name;
+                    animation_options.marginTop = state_name;
+                    animation_options.marginBottom = state_name;
+                    animation_options.paddingTop = state_name;
+                    animation_options.paddingBottom = state_name;
+                    animation_options_set = true;
+                }
+                if ($(this).hasClass("slide_right") || settings.state_transition == "slide_right") {
+                    animation_options.width = state_name;
+                    animation_options.marginLeft = state_name;
+                    animation_options.marginRight = state_name;
+                    animation_options.paddingLeft = state_name;
+                    animation_options.paddingRight = state_name;
+                    animation_options_set = true;
+                }
+                if(settings.state_transition == "none" || !animation_options_set) {
+                   if (state_name == "show") $(this).show(); else $(this).hide();
+                } else {
+                    $(this).animate(animation_options, settings.state_transition_duration);
                 }
                 $(this).data("psm_state_name", state_name);
             });          
@@ -251,7 +259,7 @@ Version 0.3
     // --------------
     // #page_x
     // #state_y
-    // TODO: #page_x_state_y
+    // #page_x_state_y
     // #history_back
     // 
     // Element Actions
@@ -260,10 +268,15 @@ Version 0.3
     // #hide_el
     // #toggle_el
     
-    // Change page
+    // Change page (and state)
     $("a[href*='#page_']").live("click", function(e) {
-        var page_name = $(this).attr("href").match(/#page_(\w+)/)[1];
         var options = {};
+        var page_and_state = $(this).attr("href").match(/#page_(\w+)_state_(\w+)/);
+        if (page_and_state) {
+            var page_name = page_and_state[1];
+            var state_name = page_and_state[2];
+        } else var page_name = $(this).attr("href").match(/#page_(\w+)/)[1];
+        if (state_name) options.initial_state = state_name;
         var page_transition = $(this).attr("class").match(/(fade|slide_left|slide_right|slide_up|slide_down)/);
         if (page_transition) options.page_transition = page_transition[1];
         if ($(this).hasClass("no_history")) options.no_history = true;
@@ -286,9 +299,7 @@ Version 0.3
         $.psm.goto_state(state_name, options);
         e.preventDefault();
     });
-    
-    // TODO: Change page AND state
-        
+            
     // Change one particular element's internal state
     $("a[href*=#show_], a[href*=#hide_], a[href*=#toggle_]").live("click", function(e) {
         var options = {};
