@@ -277,7 +277,7 @@ Version 0.4
             var state_name = page_and_state[2];
         } else var page_name = $(this).attr("href").match(/#page_(\w+)/)[1];
         if (state_name) options.initial_state = state_name;
-        var page_transition = $(this).attr("class").match(/(fade|slide_left|slide_right|slide_up|slide_down)/);
+        var page_transition = $(this).attr("class").match(/(fade|slide_left|slide_right|slide_up|slide_down|none)/);
         if (page_transition) options.page_transition = page_transition[1];
         if ($(this).hasClass("no_history")) options.no_history = true;
         $.psm.goto_page(page_name, options);
