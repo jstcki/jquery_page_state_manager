@@ -305,22 +305,19 @@ Version 0.4
         var options = {};
         var state_transition = $(this).attr("class").match(/force_(\w+)/);
         if (state_transition) options.state_transition = state_transition[1];
-        
-        var results = $(this).attr("href").match(/#(show|hide|toggle)_(\w+)/g);
-        for (var i in results) {
-            var result = results[i].match(/#(show|hide|toggle)_(\w+)/);
-            var state_name = result[1];
-            var element_id = result[2];
-            if (state_name == "toggle") {
-                var current_state = $("#"+element_id).data("psm_state_name");
-                if (current_state == "hide" || $("#"+element_id+":visible").length == 0) {
-                    $("#"+element_id).goto_state("show", options);
-                } else {
-                    $("#"+element_id).goto_state("hide", options);
-                }
+                
+        var result = $(this).attr("href").match(/#(show|hide|toggle)_(\w+)/);
+        var state_name = result[1];
+        var element_id = result[2];
+        if (state_name == "toggle") {
+            var current_state = $("#"+element_id).data("psm_state_name");
+            if (current_state == "hide" || $("#"+element_id+":visible").length == 0) {
+                $("#"+element_id).goto_state("show", options);
             } else {
-                $("#"+element_id).goto_state(state_name, options);
+                $("#"+element_id).goto_state("hide", options);
             }
+        } else {
+            $("#"+element_id).goto_state(state_name, options);
         }
         e.preventDefault();
     });    
